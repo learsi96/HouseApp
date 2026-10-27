@@ -19,3 +19,12 @@ export interface Articulo {
   basico: boolean;
   activo: boolean;
 }
+
+/** Plantilla de una comida. Los ingredientes son ids de artículos del catálogo (sin cantidades en el MVP). */
+export interface Receta {
+  id: string;
+  nombre: string;
+  ingredientes: string[];
+  etiquetas: string[];
+  activo: boolean;
+}

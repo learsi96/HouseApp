@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { addDoc, doc, getDocFromServer, getDocsFromServer, updateDoc, writeBatch } from 'firebase/firestore';
+import { doc, getDocFromServer, getDocsFromServer, setDoc, updateDoc, writeBatch } from 'firebase/firestore';
 import { defer, from, map, shareReplay, switchMap } from 'rxjs';
 
 import { ARTICULOS_INICIALES } from './articulos-iniciales';
@@ -32,17 +32,20 @@ export class ArticulosRepository {
 
   /** Devuelve el id del artículo creado. */
   async crear(datos: DatosArticulo): Promise<string> {
-    const ref = await addDoc(await this.hogarDb.coleccion(COLECCION), this.documento(datos, true));
+    const ref = doc(await this.hogarDb.coleccion(COLECCION));
+    this.hogarDb.enviar(setDoc(ref, this.documento(datos, true)));
     return ref.id;
   }
 
   async actualizar(id: string, datos: DatosArticulo): Promise<void> {
     const { nombre, clave, clasificacionId, basico } = this.documento(datos, true);
-    await updateDoc(doc(await this.hogarDb.coleccion(COLECCION), id), { nombre, clave, clasificacionId, basico });
+    this.hogarDb.enviar(
+      updateDoc(doc(await this.hogarDb.coleccion(COLECCION), id), { nombre, clave, clasificacionId, basico }),
+    );
   }
 
   async cambiarActivo(id: string, activo: boolean): Promise<void> {
-    await updateDoc(doc(await this.hogarDb.coleccion(COLECCION), id), { activo });
+    this.hogarDb.enviar(updateDoc(doc(await this.hogarDb.coleccion(COLECCION), id), { activo }));
   }
 
   /**

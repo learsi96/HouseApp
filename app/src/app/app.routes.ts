@@ -22,8 +22,7 @@ export const routes: Routes = [
       },
       {
         path: 'recetas',
-        loadComponent: proximamente,
-        data: { titulo: 'Recetas', mensaje: 'Aquí irá el recetario (Etapa 2).' },
+        loadComponent: () => import('./recetas/recetas.page').then((m) => m.RecetasPage),
       },
       {
         path: 'lista',

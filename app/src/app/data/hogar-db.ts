@@ -24,6 +24,14 @@ export class HogarDb {
     return collection(this.firebase.db, 'hogares', hogar.id, nombre);
   }
 
+  /**
+   * Las escrituras de Firestore solo resuelven cuando el servidor confirma: sin internet se quedarían
+   * esperando. Como se aplican de inmediato en la caché local (y se ven en pantalla), no se esperan.
+   */
+  enviar(escritura: Promise<unknown>): void {
+    escritura.catch((error) => console.error('No se pudo guardar en Firestore', error));
+  }
+
   /** Escucha la colección en tiempo real (incluye cambios del otro celular y cambios hechos sin internet). */
   escuchar<T>(nombre: string, mapear: (id: string, data: DocumentData) => T): Observable<T[]> {
     return new Observable<T[]>((subscriber) => {

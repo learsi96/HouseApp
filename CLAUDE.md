@@ -163,6 +163,9 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
   - `src/app/data/`: modelos planos (`modelos.ts`) y un repositorio por colección, que expone
     observables en tiempo real (`todos$`) y métodos async. Solo `HogarDb` toca Firestore.
   - Las pantallas usan `toSignal(repo.todos$)`; la app es **zoneless** (sin zone.js).
+  - **Nunca esperar (`await`) una escritura de Firestore**: sin internet no resuelve hasta
+    reconectar. Usar `hogarDb.enviar(setDoc(...))`; para crear, generar el id con `doc(coleccion)`.
+    Excepción: operaciones que requieren servidor (crear/unirse a hogar, carga inicial).
 - Nombres en español en el dominio y la UI (`Articulo`, `Clasificacion`, `crear`, `cambiarActivo`…).
 - Comparar nombres con `claveTexto()` (sin acentos ni mayúsculas) para evitar duplicados.
 - Componentes abiertos como modal: sufijo `Component` (regla de lint) y **nunca** una propiedad
@@ -178,7 +181,12 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
   buscador, agrupados por clasificación, básico de despensa, inactivar y ver inactivos).
   Catálogo inicial de 72 artículos comunes (`data/articulos-iniciales.ts`), que se cargan **una
   sola vez por hogar** (marca en `hogares/{id}/config/semillas`) y se saltan los que ya existan.
-- **Siguiente:** Etapa 2 (recetario).
+- **Etapa 2 (recetario):** terminada. Pestaña Recetas (búsqueda, "Crear receta…", filtro por
+  etiqueta, ver inactivas), formulario con ingredientes del catálogo (selector reutilizable
+  `ArticuloSelectorComponent` con búsqueda y "Crear…") y etiquetas libres con autocompletado.
+  `RecetaEditorService` abre el formulario y guarda; lo reutilizará el calendario.
+  Pendiente para la Etapa 3: al editar una receta, preguntar si se actualizan los días futuros.
+- **Siguiente:** Etapa 3 (calendario).
 
 ## Decisiones tomadas
 - Firebase para el MVP; .NET 10 + SQL solo si se formaliza (ver Stack).

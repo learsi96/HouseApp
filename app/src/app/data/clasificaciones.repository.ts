@@ -46,15 +46,15 @@ export class ClasificacionesRepository {
   );
 
   async crear(datos: DatosClasificacion, orden: number): Promise<void> {
-    await addDoc(await this.hogarDb.coleccion(COLECCION), { ...datos, orden, activo: true });
+    this.hogarDb.enviar(addDoc(await this.hogarDb.coleccion(COLECCION), { ...datos, orden, activo: true }));
   }
 
   async actualizar(id: string, datos: DatosClasificacion): Promise<void> {
-    await updateDoc(doc(await this.hogarDb.coleccion(COLECCION), id), { ...datos });
+    this.hogarDb.enviar(updateDoc(doc(await this.hogarDb.coleccion(COLECCION), id), { ...datos }));
   }
 
   async cambiarActivo(id: string, activo: boolean): Promise<void> {
-    await updateDoc(doc(await this.hogarDb.coleccion(COLECCION), id), { activo });
+    this.hogarDb.enviar(updateDoc(doc(await this.hogarDb.coleccion(COLECCION), id), { activo }));
   }
 
   /** Guarda el orden recibido (índice = posición en el recorrido del súper). */
@@ -62,7 +62,7 @@ export class ClasificacionesRepository {
     const ref = await this.hogarDb.coleccion(COLECCION);
     const batch = writeBatch(this.hogarDb.db);
     ids.forEach((id, orden) => batch.update(doc(ref, id), { orden }));
-    await batch.commit();
+    this.hogarDb.enviar(batch.commit());
   }
 
   private async asegurarIniciales(): Promise<void> {
