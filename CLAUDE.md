@@ -176,6 +176,8 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
   primeras todavía son pantallas temporales), clasificaciones (12 iniciales que se crean solas;
   crear, editar, ícono y color, ordenar, inactivar) y artículos (búsqueda, "Crear…" desde el
   buscador, agrupados por clasificación, básico de despensa, inactivar y ver inactivos).
+  Catálogo inicial de 72 artículos comunes (`data/articulos-iniciales.ts`), que se cargan **una
+  sola vez por hogar** (marca en `hogares/{id}/config/semillas`) y se saltan los que ya existan.
 - **Siguiente:** Etapa 2 (recetario).
 
 ## Decisiones tomadas
