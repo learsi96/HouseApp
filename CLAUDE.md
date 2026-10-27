@@ -148,10 +148,17 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
   propios paquetes globales: Ionic CLI 7.x solo está en Node 10.16.3 y 16.20.0 (viejos);
   Angular CLI 21.2.7 en Node 22.16.0. En la versión activa no hay ninguno de los dos.
 - Usar el Angular CLI local del proyecto (`npx ng`).
-- Falta: **Android Studio + Android SDK**. `C:\Program Files\Android` solo tiene restos de una
-  instalación anterior; `ANDROID_SDK_ROOT` apunta a una carpeta que no existe.
-- Ajustar: `JAVA_HOME` apunta a JDK 8; Capacitor reciente requiere **JDK 21**
-  (usar el JBR que trae Android Studio).
+- **Android sin Android Studio** (decisión del usuario, 2026-10-27): solo herramientas de línea de
+  comandos, todo en **E:** porque C: está casi lleno (~7 GB libres):
+  - JDK 21 (Temurin 21.0.12) en `E:\Android\jdk-21`.
+  - SDK en `E:\Android\Sdk`: cmdline-tools, platform-tools, `platforms;android-36`, `build-tools;36.0.0`.
+    `sdkmanager` ya es obsoleto: usar `E:\Android\Sdk\cmdline-tools\latest\bin\android.exe
+    --no-metrics --sdk=E:\Android\Sdk sdk install|list ...`. Licencia del SDK aceptada por el usuario.
+  - Caché de Gradle en `E:\Android\gradle`.
+  - Las variables globales **no se tocaron** (el `JAVA_HOME` global sigue en JDK 8, lo usa el trabajo).
+  - **Generar el APK:** desde `app/`: `powershell -ExecutionPolicy Bypass -File scripts\apk.ps1`
+    (fija las rutas solo para ese proceso, compila, `cap sync` y `gradlew assembleDebug`).
+    Resultado en `apk\HouseApp.apk` (raíz del repo, ignorado por git).
 - No está instalado GitHub CLI (`gh`).
 - **Futuro (si se formaliza y se publica en Play Store):** migrar a BD SQL + backend **.NET 10**,
   con login por Google y por cuenta propia en la BD, y registro de quién hace cada cambio.
