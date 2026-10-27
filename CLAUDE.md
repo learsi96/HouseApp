@@ -170,6 +170,8 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
 - Comparar nombres con `claveTexto()` (sin acentos ni mayúsculas) para evitar duplicados.
 - Componentes abiertos como modal: sufijo `Component` (regla de lint) y **nunca** una propiedad
   llamada `modal` (Ionic la reserva); usar `modalCtrl`.
+- Para cerrar un modal desde su componente usar `cerrarEsteModal()` (`core/modal.ts`), no
+  `modalCtrl.dismiss()`: con modales anidados este último puede cerrar el equivocado.
 - Antes de commitear: `npx ng lint` y `npx ng build` desde `app/`.
 - No editar archivos con `Get-Content`/`Set-Content` de PowerShell 5.1: rompe los acentos y agrega BOM.
 
@@ -195,7 +197,16 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
   - Firestore: `hogares/{id}/comidas` con `fecha` 'YYYY-MM-DD' (hora local, `data/fechas.ts`).
     Quitar una comida es borrado físico (es planeación, no catálogo).
   - `IngredientesComponent` (lista editable de ingredientes) lo usan la receta y la comida del día.
-- **Siguiente:** Etapa 4 (lista del súper).
+- **Etapa 4 (lista del súper):** terminada. Pestaña Lista: generar por rango (fechas obligatorias,
+  vista previa de comidas y artículos), agrupada por clasificación en el orden del recorrido, con
+  origen de cada artículo ("Molida con bandera, Tinga" o "Agregado a mano"), marca de básicos,
+  quitar y "Quitados (n)" con "Regresar", agregar a mano con el selector, aviso "Cambiaron las
+  comidas" + "Actualizar lista", y "Generar nueva" con confirmación (reemplaza la activa).
+  Se adelantó de la Etapa 5: palomear (tachado y al final de su grupo) y barra de progreso.
+  - Firestore: un solo documento `hogares/{id}/listas/activa` con `articulos` como **mapa por
+    articuloId**, para que cada palomeo sea una escritura independiente (`FieldPath`).
+  - Reglas de armado/actualización en `data/lista.ts` (funciones puras, probadas con node).
+- **Siguiente:** Etapa 5 (modo súper: probar tiempo real entre dos celulares y sin internet).
 
 ## Decisiones tomadas
 - Firebase para el MVP; .NET 10 + SQL solo si se formaliza (ver Stack).

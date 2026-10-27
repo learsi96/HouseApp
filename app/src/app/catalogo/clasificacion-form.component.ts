@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core';
-import { Component, Input, inject, signal } from '@angular/core';
+import { Component, Input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   IonButton,
@@ -13,9 +13,9 @@ import {
   IonNote,
   IonTitle,
   IonToolbar,
-  ModalController,
 } from '@ionic/angular';
 
+import { cerrarEsteModal } from '../core/modal';
 import { COLORES, ICONOS } from '../data/clasificaciones.repository';
 import type { DatosClasificacion } from '../data/clasificaciones.repository';
 import type { Clasificacion, ColorClasificacion } from '../data/modelos';
@@ -148,7 +148,7 @@ export type ResultadoClasificacionForm = DatosClasificacion | 'cambiar-activo';
   ],
 })
 export class ClasificacionFormComponent implements OnInit {
-  private readonly modalCtrl = inject(ModalController);
+  private readonly cerrarModal = cerrarEsteModal();
 
   /** Clasificación a editar; sin valor = nueva. */
   @Input() clasificacion?: Clasificacion;
@@ -191,6 +191,6 @@ export class ClasificacionFormComponent implements OnInit {
   }
 
   cerrar(resultado?: ResultadoClasificacionForm): void {
-    this.modalCtrl.dismiss(resultado);
+    this.cerrarModal(resultado);
   }
 }

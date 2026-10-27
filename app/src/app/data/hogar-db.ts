@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import type { CollectionReference, DocumentData, Firestore, QueryConstraint } from 'firebase/firestore';
-import { collection, onSnapshot, query } from 'firebase/firestore';
+import { collection, doc, onSnapshot, query } from 'firebase/firestore';
 import { Observable } from 'rxjs';
 
 import { FirebaseService } from '../core/firebase.service';
@@ -30,6 +30,31 @@ export class HogarDb {
    */
   enviar(escritura: Promise<unknown>): void {
     escritura.catch((error) => console.error('No se pudo guardar en Firestore', error));
+  }
+
+  /** Escucha un documento en tiempo real; emite null si no existe. */
+  escucharDoc<T>(nombre: string, id: string, mapear: (data: DocumentData) => T): Observable<T | null> {
+    return new Observable<T | null>((subscriber) => {
+      let cancelar: (() => void) | undefined;
+      let cerrado = false;
+      this.coleccion(nombre).then(
+        (ref) => {
+          if (cerrado) {
+            return;
+          }
+          cancelar = onSnapshot(
+            doc(ref, id),
+            (snap) => subscriber.next(snap.exists() ? mapear(snap.data()) : null),
+            (error) => subscriber.error(error),
+          );
+        },
+        (error) => subscriber.error(error),
+      );
+      return () => {
+        cerrado = true;
+        cancelar?.();
+      };
+    });
   }
 
   /** Escucha la colección en tiempo real (incluye cambios del otro celular y cambios hechos sin internet). */

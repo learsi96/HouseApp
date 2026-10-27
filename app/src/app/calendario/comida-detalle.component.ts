@@ -1,17 +1,9 @@
 import type { OnInit } from '@angular/core';
-import { Component, Input, inject, signal } from '@angular/core';
-import {
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonNote,
-  IonTitle,
-  IonToolbar,
-  ModalController,
-} from '@ionic/angular';
+import { Component, Input, signal } from '@angular/core';
+import { IonButton, IonButtons, IonContent, IonHeader, IonNote, IonTitle, IonToolbar } from '@ionic/angular';
 
 import { IngredientesComponent } from '../catalogo/ingredientes.component';
+import { cerrarEsteModal } from '../core/modal';
 import { deIso, fechaLarga } from '../data/fechas';
 import type { ComidaPlaneada } from '../data/modelos';
 
@@ -78,7 +70,7 @@ export type ResultadoComidaDetalle = { accion: 'guardar'; ingredientes: string[]
   imports: [IngredientesComponent, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonNote],
 })
 export class ComidaDetalleComponent implements OnInit {
-  private readonly modalCtrl = inject(ModalController);
+  private readonly cerrarModal = cerrarEsteModal();
 
   @Input({ required: true }) comida!: ComidaPlaneada;
 
@@ -95,6 +87,6 @@ export class ComidaDetalleComponent implements OnInit {
   }
 
   cerrar(resultado?: ResultadoComidaDetalle): void {
-    this.modalCtrl.dismiss(resultado);
+    this.cerrarModal(resultado);
   }
 }

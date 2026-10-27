@@ -47,3 +47,23 @@ export interface ComidaPlaneada {
   /** Para ordenar las comidas de un mismo día en el orden en que se agregaron. */
   orden: number;
 }
+
+/** Artículo dentro de la lista del súper. */
+export interface ArticuloLista {
+  articuloId: string;
+  /** Comidas del rango que lo usan (vacío si solo se agregó a mano). */
+  origenes: string[];
+  /** Agregado a mano (no depende de las comidas). */
+  manual: boolean;
+  /** Quitado de esta lista (ya lo tienen); la receta y la comida no cambian. */
+  quitado: boolean;
+  comprado: boolean;
+}
+
+/** La lista activa del hogar (solo hay una en el MVP). */
+export interface ListaCompra {
+  /** 'YYYY-MM-DD' */
+  inicio: string;
+  fin: string;
+  articulos: ArticuloLista[];
+}

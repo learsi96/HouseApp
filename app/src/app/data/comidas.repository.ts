@@ -41,6 +41,14 @@ export class ComidasRepository {
       .pipe(map((lista) => lista.sort((a, b) => a.fecha.localeCompare(b.fecha) || a.orden - b.orden)));
   }
 
+  /** Lectura única del rango (del servidor, o de la caché si no hay internet). */
+  async enRango(inicio: string, fin: string): Promise<ComidaPlaneada[]> {
+    const snap = await getDocs(
+      query(await this.hogarDb.coleccion(COLECCION), where('fecha', '>=', inicio), where('fecha', '<=', fin)),
+    );
+    return snap.docs.map((d) => mapear(d.id, d.data()));
+  }
+
   async agregarReceta(fecha: string, receta: Pick<Receta, 'id' | 'nombre' | 'ingredientes'>): Promise<void> {
     await this.agregar({
       fecha,

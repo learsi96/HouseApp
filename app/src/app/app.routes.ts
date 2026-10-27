@@ -1,9 +1,6 @@
-import type { Type } from '@angular/core';
 import type { Routes } from '@angular/router';
 
 import { hogarGuard } from './core/hogar.guard';
-
-const proximamente = (): Promise<Type<unknown>> => import('./tabs/proximamente.page').then((m) => m.ProximamentePage);
 
 export const routes: Routes = [
   {
@@ -25,8 +22,7 @@ export const routes: Routes = [
       },
       {
         path: 'lista',
-        loadComponent: proximamente,
-        data: { titulo: 'Lista del súper', mensaje: 'Aquí irá la lista del súper (Etapa 4).' },
+        loadComponent: () => import('./lista/lista.page').then((m) => m.ListaPage),
       },
       {
         path: 'mas',

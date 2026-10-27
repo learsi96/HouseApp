@@ -16,11 +16,11 @@ import {
   IonSearchbar,
   IonTitle,
   IonToolbar,
-  ModalController,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { addCircleOutline } from 'ionicons/icons';
 
+import { cerrarEsteModal } from '../core/modal';
 import { ESPECIALES, ICONO_ESPECIAL_LIBRE } from '../data/comidas.repository';
 import type { Receta } from '../data/modelos';
 import { RecetasRepository } from '../data/recetas.repository';
@@ -118,7 +118,7 @@ export type ComidaElegida = { tipo: 'receta'; receta: Receta } | { tipo: 'especi
   ],
 })
 export class AgregarComidaComponent {
-  private readonly modalCtrl = inject(ModalController);
+  private readonly cerrarModal = cerrarEsteModal();
   private readonly alerta = inject(AlertController);
   private readonly editor = inject(RecetaEditorService);
 
@@ -168,6 +168,6 @@ export class AgregarComidaComponent {
   }
 
   cerrar(resultado?: ComidaElegida): void {
-    this.modalCtrl.dismiss(resultado);
+    this.cerrarModal(resultado);
   }
 }

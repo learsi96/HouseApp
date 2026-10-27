@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core';
-import { Component, Input, inject, signal } from '@angular/core';
+import { Component, Input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   IonButton,
@@ -16,9 +16,9 @@ import {
   IonTitle,
   IonToggle,
   IonToolbar,
-  ModalController,
 } from '@ionic/angular';
 
+import { cerrarEsteModal } from '../core/modal';
 import type { DatosArticulo } from '../data/articulos.repository';
 import type { Articulo, Clasificacion } from '../data/modelos';
 import { claveTexto, limpiarNombre } from '../data/texto';
@@ -125,7 +125,7 @@ export type ResultadoArticuloForm = DatosArticulo | 'cambiar-activo';
   ],
 })
 export class ArticuloFormComponent implements OnInit {
-  private readonly modalCtrl = inject(ModalController);
+  private readonly cerrarModal = cerrarEsteModal();
 
   /** Artículo a editar; sin valor = nuevo. */
   @Input() articulo?: Articulo;
@@ -177,6 +177,6 @@ export class ArticuloFormComponent implements OnInit {
   }
 
   cerrar(resultado?: ResultadoArticuloForm): void {
-    this.modalCtrl.dismiss(resultado);
+    this.cerrarModal(resultado);
   }
 }

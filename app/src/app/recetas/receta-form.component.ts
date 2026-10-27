@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core';
-import { Component, Input, computed, inject, signal } from '@angular/core';
+import { Component, Input, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   IonButton,
@@ -16,12 +16,12 @@ import {
   IonNote,
   IonTitle,
   IonToolbar,
-  ModalController,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { add, closeCircle } from 'ionicons/icons';
 
 import { IngredientesComponent } from '../catalogo/ingredientes.component';
+import { cerrarEsteModal } from '../core/modal';
 import type { Receta } from '../data/modelos';
 import type { DatosReceta } from '../data/recetas.repository';
 import { claveTexto, limpiarNombre } from '../data/texto';
@@ -144,7 +144,7 @@ export type ResultadoRecetaForm = DatosReceta | 'cambiar-activo';
   ],
 })
 export class RecetaFormComponent implements OnInit {
-  private readonly modalCtrl = inject(ModalController);
+  private readonly cerrarModal = cerrarEsteModal();
 
   /** Receta a editar; sin valor = nueva. */
   @Input() receta?: Receta;
@@ -226,6 +226,6 @@ export class RecetaFormComponent implements OnInit {
   }
 
   cerrar(resultado?: ResultadoRecetaForm): void {
-    this.modalCtrl.dismiss(resultado);
+    this.cerrarModal(resultado);
   }
 }

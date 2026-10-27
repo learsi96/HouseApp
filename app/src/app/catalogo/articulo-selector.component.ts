@@ -22,6 +22,7 @@ import {
 import { addIcons } from 'ionicons';
 import { addCircleOutline } from 'ionicons/icons';
 
+import { cerrarEsteModal } from '../core/modal';
 import { ArticulosRepository } from '../data/articulos.repository';
 import { ClasificacionesRepository } from '../data/clasificaciones.repository';
 import type { Articulo, Clasificacion } from '../data/modelos';
@@ -120,6 +121,7 @@ interface Grupo {
 })
 export class ArticuloSelectorComponent implements OnInit {
   private readonly modalCtrl = inject(ModalController);
+  private readonly cerrarModal = cerrarEsteModal();
   private readonly repo = inject(ArticulosRepository);
 
   @Input() titulo = 'Ingredientes';
@@ -186,6 +188,6 @@ export class ArticuloSelectorComponent implements OnInit {
   }
 
   cerrar(resultado?: string[]): void {
-    this.modalCtrl.dismiss(resultado);
+    this.cerrarModal(resultado);
   }
 }
