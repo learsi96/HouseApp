@@ -28,3 +28,22 @@ export interface Receta {
   etiquetas: string[];
   activo: boolean;
 }
+
+/**
+ * Comida asignada a un día. Guarda su propia copia del nombre y de los ingredientes,
+ * así los ajustes del día no tocan la receta y los días pasados no cambian si la receta cambia.
+ */
+export interface ComidaPlaneada {
+  id: string;
+  /** 'YYYY-MM-DD' en hora local. */
+  fecha: string;
+  tipo: 'receta' | 'especial';
+  /** Receta de origen (solo tipo 'receta'). */
+  recetaId: string | null;
+  nombre: string;
+  /** Emoji de los días especiales. */
+  icono: string;
+  ingredientes: string[];
+  /** Para ordenar las comidas de un mismo día en el orden en que se agregaron. */
+  orden: number;
+}

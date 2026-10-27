@@ -185,8 +185,17 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
   etiqueta, ver inactivas), formulario con ingredientes del catálogo (selector reutilizable
   `ArticuloSelectorComponent` con búsqueda y "Crear…") y etiquetas libres con autocompletado.
   `RecetaEditorService` abre el formulario y guarda; lo reutilizará el calendario.
-  Pendiente para la Etapa 3: al editar una receta, preguntar si se actualizan los días futuros.
-- **Siguiente:** Etapa 3 (calendario).
+- **Etapa 3 (calendario):** terminada. Pestaña Calendario (pantalla de inicio) con vista Semana
+  (lunes a domingo) y Mes (cuadrícula con puntos y las comidas del día elegido), navegación y "Hoy".
+  Agregar comida a un día: receta del recetario, "Crear receta…" o día especial (Comemos fuera,
+  Sobras, Pedimos comida, u "Otro…" con texto libre). Detalle de la comida: ajustar ingredientes
+  solo de ese día (pregunta si también se cambia la receta) y "Quitar de este día".
+  Al editar una receta (desde el recetario o desde un día) se pregunta si se actualizan las comidas
+  planeadas **desde hoy**; los días pasados nunca cambian.
+  - Firestore: `hogares/{id}/comidas` con `fecha` 'YYYY-MM-DD' (hora local, `data/fechas.ts`).
+    Quitar una comida es borrado físico (es planeación, no catálogo).
+  - `IngredientesComponent` (lista editable de ingredientes) lo usan la receta y la comida del día.
+- **Siguiente:** Etapa 4 (lista del súper).
 
 ## Decisiones tomadas
 - Firebase para el MVP; .NET 10 + SQL solo si se formaliza (ver Stack).

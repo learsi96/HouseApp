@@ -2,7 +2,10 @@ import { Injectable, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AlertController, ModalController } from '@ionic/angular';
 
+import { ComidasRepository } from '../data/comidas.repository';
+import { hoyIso } from '../data/fechas';
 import type { Receta } from '../data/modelos';
+import type { DatosReceta } from '../data/recetas.repository';
 import { RecetasRepository } from '../data/recetas.repository';
 
 import { RecetaFormComponent } from './receta-form.component';
@@ -12,15 +15,16 @@ import type { ResultadoRecetaForm } from './receta-form.component';
 @Injectable({ providedIn: 'root' })
 export class RecetaEditorService {
   private readonly repo = inject(RecetasRepository);
+  private readonly comidas = inject(ComidasRepository);
   private readonly modalCtrl = inject(ModalController);
   private readonly alerta = inject(AlertController);
   private readonly recetas = toSignal(this.repo.todas$, { initialValue: [] as Receta[] });
 
-  /** Crea una receta nueva. Devuelve su id, o undefined si se canceló. */
-  async nueva(nombreInicial = ''): Promise<string | undefined> {
+  /** Crea una receta nueva. Devuelve la receta creada, o undefined si se canceló. */
+  async nueva(nombreInicial = ''): Promise<Receta | undefined> {
     const resultado = await this.abrir({ nombreInicial });
     if (resultado && resultado !== 'cambiar-activo') {
-      return this.repo.crear(resultado);
+      return { id: await this.repo.crear(resultado), ...resultado, activo: true };
     }
     return undefined;
   }
@@ -31,14 +35,13 @@ export class RecetaEditorService {
       return;
     }
     if (resultado !== 'cambiar-activo') {
-      // Etapa 3: aquí se preguntará si actualizar también los días futuros que ya la tienen planeada.
-      await this.repo.actualizar(receta.id, resultado);
+      await this.guardar(receta, resultado);
     } else if (!receta.activo) {
       await this.repo.cambiarActivo(receta.id, true);
     } else {
       const confirmacion = await this.alerta.create({
         header: 'Inactivar receta',
-        message: `"${receta.nombre}" dejará de aparecer en el recetario. Los días donde ya se usó no cambian.`,
+        message: `"${receta.nombre}" dejará de aparecer en el recetario. Los días donde ya está planeada no cambian.`,
         buttons: [
           { text: 'Cancelar', role: 'cancel' },
           { text: 'Inactivar', role: 'destructive' },
@@ -49,6 +52,44 @@ export class RecetaEditorService {
       if (role === 'destructive') {
         await this.repo.cambiarActivo(receta.id, false);
       }
+    }
+  }
+
+  /**
+   * Guarda cambios en la receta y, si cambió el nombre o los ingredientes, pregunta si se aplican
+   * también a las comidas ya planeadas desde hoy. Los días pasados nunca cambian.
+   * @param excluirComidaId comida que originó el cambio (ya tiene sus ingredientes).
+   */
+  async guardar(receta: Receta, datos: DatosReceta, excluirComidaId?: string): Promise<void> {
+    await this.repo.actualizar(receta.id, datos);
+    const cambio =
+      datos.nombre !== receta.nombre ||
+      datos.ingredientes.length !== receta.ingredientes.length ||
+      datos.ingredientes.some((id) => !receta.ingredientes.includes(id));
+    if (!cambio) {
+      return;
+    }
+    const futuras = (await this.comidas.deRecetaDesde(receta.id, hoyIso())).filter((c) => c.id !== excluirComidaId);
+    if (!futuras.length) {
+      return;
+    }
+    const pregunta = await this.alerta.create({
+      header: 'Comidas ya planeadas',
+      message:
+        `"${datos.nombre}" está planeada ${futuras.length === 1 ? 'otra vez' : `${futuras.length} veces más`} ` +
+        'desde hoy. ¿Les aplico también los cambios? Se reemplazan sus ingredientes por los de la receta.',
+      buttons: [
+        { text: 'No, solo la receta', role: 'cancel' },
+        { text: 'Sí, actualizarlas', role: 'confirm' },
+      ],
+    });
+    await pregunta.present();
+    const { role } = await pregunta.onDidDismiss();
+    if (role === 'confirm') {
+      await this.comidas.actualizarDesdeReceta(
+        futuras.map((c) => c.id),
+        datos,
+      );
     }
   }
 

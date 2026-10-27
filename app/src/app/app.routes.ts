@@ -17,8 +17,7 @@ export const routes: Routes = [
     children: [
       {
         path: 'calendario',
-        loadComponent: proximamente,
-        data: { titulo: 'Calendario', mensaje: 'Aquí irá el calendario de comidas (Etapa 3).' },
+        loadComponent: () => import('./calendario/calendario.page').then((m) => m.CalendarioPage),
       },
       {
         path: 'recetas',

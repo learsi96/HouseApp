@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import type { CollectionReference, DocumentData, Firestore } from 'firebase/firestore';
-import { collection, onSnapshot } from 'firebase/firestore';
+import type { CollectionReference, DocumentData, Firestore, QueryConstraint } from 'firebase/firestore';
+import { collection, onSnapshot, query } from 'firebase/firestore';
 import { Observable } from 'rxjs';
 
 import { FirebaseService } from '../core/firebase.service';
@@ -33,7 +33,11 @@ export class HogarDb {
   }
 
   /** Escucha la colección en tiempo real (incluye cambios del otro celular y cambios hechos sin internet). */
-  escuchar<T>(nombre: string, mapear: (id: string, data: DocumentData) => T): Observable<T[]> {
+  escuchar<T>(
+    nombre: string,
+    mapear: (id: string, data: DocumentData) => T,
+    restricciones: QueryConstraint[] = [],
+  ): Observable<T[]> {
     return new Observable<T[]>((subscriber) => {
       let cancelar: (() => void) | undefined;
       let cerrado = false;
@@ -43,7 +47,7 @@ export class HogarDb {
             return;
           }
           cancelar = onSnapshot(
-            ref,
+            query(ref, ...restricciones),
             (snap) => subscriber.next(snap.docs.map((d) => mapear(d.id, d.data()))),
             (error) => subscriber.error(error),
           );
