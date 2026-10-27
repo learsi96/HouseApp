@@ -164,7 +164,12 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
 
 ## Decisiones tomadas
 - Firebase para el MVP; .NET 10 + SQL solo si se formaliza (ver Stack).
-- Sin login visible en el MVP. Pendiente confirmar el uso de Firebase Anonymous Auth (invisible para el usuario) para poder proteger los datos con reglas de seguridad.
+- Sin login visible en el MVP: se usa Firebase Anonymous Auth (un usuario por celular).
+- **Código de hogar:** la primera vez, un celular crea el hogar y recibe un código (ej. `K7P-42Q`);
+  el otro celular se une escribiéndolo. Se hace una sola vez por celular (si se reinstala la app,
+  se vuelve a capturar el código). Modelo en Firestore: `usuarios/{uid}`, `codigos/{codigo}`,
+  `hogares/{hogarId}` con `miembros[]`, y todos los datos bajo `hogares/{hogarId}/...`.
+  Las reglas están en `firestore.rules` (raíz del repo) y solo dejan entrar a los miembros del hogar.
 
 ## Preguntas abiertas
 _Ver la retroalimentación del análisis inicial; se irán anotando aquí las respuestas._
