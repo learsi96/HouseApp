@@ -1,5 +1,14 @@
 import { Injectable, inject } from '@angular/core';
-import { arrayUnion, collection, doc, getDoc, serverTimestamp, setDoc, updateDoc, writeBatch } from 'firebase/firestore';
+import {
+  arrayUnion,
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  writeBatch,
+} from 'firebase/firestore';
 
 import { FirebaseService } from './firebase.service';
 

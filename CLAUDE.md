@@ -4,8 +4,7 @@
 > Contiene el contexto principal del proyecto.
 
 ## Estado actual
-Definición del MVP **cerrada** (bloques 1 a 8). Se arranca el desarrollo por etapas, empezando
-por la preparación del entorno y del proyecto.
+Definición del MVP **cerrada** (bloques 1 a 8). Desarrollo por etapas: ver **Progreso**.
 
 ## Descripción general
 App móvil para planear las comidas de la semana y generar la lista del súper.
@@ -161,6 +160,23 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
 - Borrado lógico (campo activo/inactivo) en los catálogos, como las recetas.
 - Separar el acceso a datos detrás de una capa de repositorios/servicios, para que migrar
   de Firebase a .NET + SQL no obligue a reescribir la UI.
+  - `src/app/data/`: modelos planos (`modelos.ts`) y un repositorio por colección, que expone
+    observables en tiempo real (`todos$`) y métodos async. Solo `HogarDb` toca Firestore.
+  - Las pantallas usan `toSignal(repo.todos$)`; la app es **zoneless** (sin zone.js).
+- Nombres en español en el dominio y la UI (`Articulo`, `Clasificacion`, `crear`, `cambiarActivo`…).
+- Comparar nombres con `claveTexto()` (sin acentos ni mayúsculas) para evitar duplicados.
+- Componentes abiertos como modal: sufijo `Component` (regla de lint) y **nunca** una propiedad
+  llamada `modal` (Ionic la reserva); usar `modalCtrl`.
+- Antes de commitear: `npx ng lint` y `npx ng build` desde `app/`.
+- No editar archivos con `Get-Content`/`Set-Content` de PowerShell 5.1: rompe los acentos y agrega BOM.
+
+## Progreso
+- **Etapa 0 (preparación):** terminada. Proyecto, Firebase, hogar con código, reglas.
+- **Etapa 1 (catálogos):** terminada. Pestañas (Calendario, Recetas, Lista y Más; las tres
+  primeras todavía son pantallas temporales), clasificaciones (12 iniciales que se crean solas;
+  crear, editar, ícono y color, ordenar, inactivar) y artículos (búsqueda, "Crear…" desde el
+  buscador, agrupados por clasificación, básico de despensa, inactivar y ver inactivos).
+- **Siguiente:** Etapa 2 (recetario).
 
 ## Decisiones tomadas
 - Firebase para el MVP; .NET 10 + SQL solo si se formaliza (ver Stack).

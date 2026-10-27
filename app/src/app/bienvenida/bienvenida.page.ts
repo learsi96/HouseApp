@@ -48,7 +48,7 @@ export class BienvenidaPage {
   }
 
   entrar(): Promise<boolean> {
-    return this.router.navigateByUrl('/home', { replaceUrl: true });
+    return this.router.navigateByUrl('/calendario', { replaceUrl: true });
   }
 
   private async ejecutar(accion: () => Promise<void>, mensajeError: string): Promise<void> {

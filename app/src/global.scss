@@ -1,3 +1,5 @@
+@use 'sass:list';
+
 /*
  * App Global CSS
  * ----------------------------------------------------------------------------
@@ -10,20 +12,20 @@
  */
 
 /* Core CSS required for Ionic components to work properly */
-@import "@ionic/angular/css/core.css";
+@import '@ionic/angular/css/core.css';
 
 /* Basic CSS for apps built with Ionic */
-@import "@ionic/angular/css/normalize.css";
-@import "@ionic/angular/css/structure.css";
-@import "@ionic/angular/css/typography.css";
-@import "@ionic/angular/css/display.css";
+@import '@ionic/angular/css/normalize.css';
+@import '@ionic/angular/css/structure.css';
+@import '@ionic/angular/css/typography.css';
+@import '@ionic/angular/css/display.css';
 
 /* Optional CSS utils that can be commented out */
-@import "@ionic/angular/css/padding.css";
-@import "@ionic/angular/css/float-elements.css";
-@import "@ionic/angular/css/text-alignment.css";
-@import "@ionic/angular/css/text-transformation.css";
-@import "@ionic/angular/css/flex-utils.css";
+@import '@ionic/angular/css/padding.css';
+@import '@ionic/angular/css/float-elements.css';
+@import '@ionic/angular/css/text-alignment.css';
+@import '@ionic/angular/css/text-transformation.css';
+@import '@ionic/angular/css/flex-utils.css';
 
 /**
  * Ionic Dark Mode
@@ -35,3 +37,75 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+/**
+ * Colores suaves de las clasificaciones (fondo del ícono y encabezados de grupo).
+ * Se usan con la clase `cl-<color>`; el valor viene de `Clasificacion.color`.
+ */
+$colores-clasificacion: (
+  verde: (
+    #dcefe3,
+    #1f3d2b,
+  ),
+  rojo: (
+    #f8deda,
+    #47231e,
+  ),
+  amarillo: (
+    #fbf0d0,
+    #463b17,
+  ),
+  cafe: (
+    #eee1d3,
+    #3d3024,
+  ),
+  naranja: (
+    #fce3d2,
+    #48291a,
+  ),
+  rosa: (
+    #f8ddea,
+    #45222f,
+  ),
+  azul: (
+    #dce9f7,
+    #1d2f45,
+  ),
+  turquesa: (
+    #d5f0ee,
+    #183c3a,
+  ),
+  morado: (
+    #eadff5,
+    #33244a,
+  ),
+  gris: (
+    #e8e8e8,
+    #333333,
+  ),
+);
+
+@each $nombre, $tonos in $colores-clasificacion {
+  .cl-#{$nombre} {
+    --cl-fondo: #{list.nth($tonos, 1)};
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  @each $nombre, $tonos in $colores-clasificacion {
+    .cl-#{$nombre} {
+      --cl-fondo: #{list.nth($tonos, 2)};
+    }
+  }
+}
+
+.icono-clasificacion {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 22px;
+  background: var(--cl-fondo, var(--ion-color-light));
+}
