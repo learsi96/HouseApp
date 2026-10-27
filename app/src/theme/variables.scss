@@ -1,2 +1,38 @@
 // For information on how to create your own theme, please refer to:
 // https://ionicframework.com/docs/theming/
+
+// Paleta HouseApp: verde albahaca (principal) y terracota/jitomate (acento).
+:root {
+  --ion-color-primary: #2e7d4f;
+  --ion-color-primary-rgb: 46, 125, 79;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #286e46;
+  --ion-color-primary-tint: #438a61;
+
+  --ion-color-secondary: #d2603a;
+  --ion-color-secondary-rgb: 210, 96, 58;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #b95433;
+  --ion-color-secondary-tint: #d7704e;
+}
+
+// En tema oscuro, tonos más claros para que se lean sobre fondo oscuro.
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ion-color-primary: #6cc191;
+    --ion-color-primary-rgb: 108, 193, 145;
+    --ion-color-primary-contrast: #0c2416;
+    --ion-color-primary-contrast-rgb: 12, 36, 22;
+    --ion-color-primary-shade: #5faa80;
+    --ion-color-primary-tint: #7bc79c;
+
+    --ion-color-secondary: #f08a66;
+    --ion-color-secondary-rgb: 240, 138, 102;
+    --ion-color-secondary-contrast: #2a0f05;
+    --ion-color-secondary-contrast-rgb: 42, 15, 5;
+    --ion-color-secondary-shade: #d37a5a;
+    --ion-color-secondary-tint: #f29675;
+  }
+}

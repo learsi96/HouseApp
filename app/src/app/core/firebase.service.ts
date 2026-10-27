@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
-import { FirebaseApp, initializeApp } from 'firebase/app';
-import { Auth, User, indexedDBLocalPersistence, initializeAuth, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
-import { Firestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
+import type { FirebaseApp } from 'firebase/app';
+import { initializeApp } from 'firebase/app';
+import type { Auth, User } from 'firebase/auth';
+import { indexedDBLocalPersistence, initializeAuth, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
+import type { Firestore } from 'firebase/firestore';
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 
 import { environment } from '../../environments/environment';
 

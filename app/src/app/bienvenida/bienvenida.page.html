@@ -1,0 +1,47 @@
+<ion-content class="ion-padding">
+  <div class="contenedor">
+    <div class="marca">
+      <div class="logo">🧺</div>
+      <h1>HouseApp</h1>
+      <p>Planea las comidas de la semana y arma la lista del súper, en pareja.</p>
+    </div>
+
+    @switch (paso()) {
+      @case ('inicio') {
+        <ion-button expand="block" (click)="crear()" [disabled]="ocupado()">Crear un hogar nuevo</ion-button>
+        <ion-button expand="block" fill="outline" (click)="irA('unirse')" [disabled]="ocupado()">
+          Ya tengo un código
+        </ion-button>
+      }
+
+      @case ('creado') {
+        <p class="ayuda">Tu hogar está listo. En el otro celular elige <strong>"Ya tengo un código"</strong> y escribe:</p>
+        <div class="codigo">{{ codigoCreado() }}</div>
+        <ion-note>También lo puedes consultar después dentro de la app.</ion-note>
+        <ion-button expand="block" (click)="entrar()">Continuar</ion-button>
+      }
+
+      @case ('unirse') {
+        <p class="ayuda">Escribe el código que aparece en el celular de tu pareja.</p>
+        <ion-input
+          class="entrada-codigo"
+          fill="outline"
+          placeholder="ABC-123"
+          maxlength="7"
+          autocapitalize="characters"
+          [(ngModel)]="codigo"
+          (keyup.enter)="unirse()"
+        ></ion-input>
+        <ion-button expand="block" (click)="unirse()" [disabled]="ocupado() || codigo.length < 6">Unirme</ion-button>
+        <ion-button expand="block" fill="clear" (click)="irA('inicio')" [disabled]="ocupado()">Regresar</ion-button>
+      }
+    }
+
+    @if (ocupado()) {
+      <ion-spinner name="crescent"></ion-spinner>
+    }
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+  </div>
+</ion-content>

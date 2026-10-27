@@ -1,0 +1,66 @@
+.contenedor {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  min-height: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.marca {
+  text-align: center;
+  margin-bottom: 24px;
+
+  .logo {
+    font-size: 56px;
+  }
+
+  h1 {
+    margin: 8px 0 4px;
+    font-weight: 700;
+    color: var(--ion-color-primary);
+  }
+
+  p {
+    margin: 0;
+    color: var(--ion-color-medium);
+  }
+}
+
+.ayuda {
+  text-align: center;
+  margin: 0;
+}
+
+.codigo {
+  text-align: center;
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  padding: 16px;
+  border-radius: 16px;
+  color: var(--ion-color-primary);
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
+}
+
+ion-note {
+  text-align: center;
+}
+
+.entrada-codigo {
+  text-align: center;
+  font-size: 24px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+ion-spinner {
+  align-self: center;
+}
+
+.error {
+  text-align: center;
+  color: var(--ion-color-danger);
+  margin: 0;
+}

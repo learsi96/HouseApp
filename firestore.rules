@@ -1,0 +1,55 @@
+rules_version = '2';
+
+// Modelo:
+//   usuarios/{uid}            -> { hogarId }              cada celular (usuario anónimo) sabe a qué hogar pertenece
+//   codigos/{codigo}          -> { hogarId }              para unirse a un hogar con su código
+//   hogares/{hogarId}         -> { codigo, miembros[], creadoEn }
+//   hogares/{hogarId}/...     -> todos los datos del hogar (catálogos, recetas, calendario, lista)
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function hogar(hogarId) {
+      return get(/databases/$(database)/documents/hogares/$(hogarId)).data;
+    }
+
+    function isMember(hogarId) {
+      return signedIn() && request.auth.uid in hogar(hogarId).miembros;
+    }
+
+    match /usuarios/{uid} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
+
+    match /codigos/{codigo} {
+      // Solo get (nunca list): hay que conocer el código para encontrar el hogar.
+      allow get: if signedIn();
+      // Se crea junto con el hogar, en el mismo batch. Sin update: un código existente no se reasigna.
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['hogarId'])
+        && request.auth.uid in getAfter(/databases/$(database)/documents/hogares/$(request.resource.data.hogarId)).data.miembros
+        && getAfter(/databases/$(database)/documents/hogares/$(request.resource.data.hogarId)).data.codigo == codigo;
+    }
+
+    match /hogares/{hogarId} {
+      allow get: if isMember(hogarId);
+
+      allow create: if signedIn()
+        && request.resource.data.miembros == [request.auth.uid];
+
+      // Unirse: solo se agrega el propio uid a miembros, sin tocar nada más.
+      allow update: if signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['miembros'])
+        && request.resource.data.miembros.hasAll(resource.data.miembros)
+        && request.resource.data.miembros.removeAll(resource.data.miembros) == [request.auth.uid]
+        && request.resource.data.miembros.size() <= 10;
+
+      match /{document=**} {
+        allow read, write: if isMember(hogarId);
+      }
+    }
+  }
+}
