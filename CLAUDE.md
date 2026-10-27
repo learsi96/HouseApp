@@ -121,6 +121,9 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
 - **App:** **Ionic + Angular** (el usuario ya lo conoce) + **Capacitor** para generar el APK de Android.
 - **Datos:** Firebase JS SDK — Firestore con caché persistente (modo sin internet + tiempo real)
   y Firebase Anonymous Auth (invisible) para poder usar reglas de seguridad.
+- En Firebase la app se registra como **app Web** (el Firebase JS SDK corre dentro del WebView de
+  Capacitor). Registrar la app Android (`google-services.json`) solo hará falta si se usan
+  funciones nativas, como notificaciones push (MVP 2).
 - **Distribución del MVP:** APK instalado directo en los dos celulares, opcionalmente con
   Firebase App Distribution. No va a Play Store.
 - **Repositorio:** GitHub **privado** en la cuenta **`learsi96`**. El git global de la máquina
