@@ -12,7 +12,7 @@
   entre los dos y uso sin internet). Ver **Pendientes**.
 - **Para publicar una versión nueva** (cuando el usuario diga "genera y distribuye"): subir
   `versionCode`/`versionName` en `app/android/app/build.gradle`, lint + build, y desde `app/`:
-  `powershell -ExecutionPolicy Bypass -File scriptspk.ps1 -Distribuir -Notas "Qué cambió"`.
+  `powershell -ExecutionPolicy Bypass -File scripts\apk.ps1 -Distribuir -Notas "Qué cambió"`.
 - Forma de trabajo con el usuario: en español, paso a paso; para definir, entrevista con pocas
   preguntas por bloque; para diseño, se desarrolla directo y el usuario pide ajustes sobre la marcha.
 
