@@ -112,8 +112,11 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
   `.firebaserc` quedan listos por si se usa Firebase CLI.
 - **Distribución del MVP:** APK de depuración instalado directo en los dos celulares (no Play Store).
   Versión actual **1.1** (`versionCode 2`, en `app/android/app/build.gradle`): subirla en cada APK
-  que se distribuya. Propuesta para repartirlo: **Firebase App Distribution** (requiere registrar la
-  app Android `com.learsi96.houseapp` en Firebase; opcional Firebase CLI para subirlo desde el script).
+  que se distribuya. Se reparte con **Firebase App Distribution**: app Android registrada con ID
+  `1:989154693098:android:b56b2e0eba8d0bf724ec93`; `apk.ps1 -Distribuir -Notas "..."` la sube al
+  grupo `casa` (parámetro `-Grupo`) con `npx firebase-tools`. Sesión de Firebase CLI ya iniciada con
+  la cuenta personal; si caduca, `npx firebase-tools login` desde una PowerShell normal (desde Claude
+  no es interactiva y pide código). La 1.1 ya se distribuyó al grupo `casa`.
 - **Futuro:** si se formaliza, migrar a .NET 10 + SQL. Por eso los datos están detrás de repositorios
   y los modelos son planos. Tablas previstas: `Clasificacion`, `Articulo`, `Receta`,
   `RecetaIngrediente`, `RecetaEtiqueta`, `ComidaPlaneada`, `ComidaPlaneadaIngrediente`,
@@ -215,8 +218,6 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
 - [ ] **Etapa 5:** instalar el APK en los dos celulares y probar tiempo real y modo sin internet.
 - [ ] Probar en un celular la pregunta de "actualizar las comidas planeadas desde hoy" al editar una
       receta (el código está, pero no se probó en el navegador para no modificar la receta real).
-- [ ] Distribuir con Firebase App Distribution (el usuario registra la app Android y crea el grupo
-      de testers; pendiente pasar el ID de la app para automatizar la subida).
 - [ ] Ícono y pantalla de carga propios de HouseApp (opcional, ofrecido al usuario).
 - [ ] Ajustes de diseño que pida el usuario al usar la app.
 - Datos actuales del hogar del navegador: receta "Molida con bandera" (creada en pruebas, real),
