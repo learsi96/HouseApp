@@ -1,10 +1,16 @@
 # HouseApp — Contexto del proyecto
 
 > Este archivo se carga automáticamente en cada sesión de Claude Code.
-> Contiene el contexto principal del proyecto.
+> Contiene el contexto principal del proyecto. Última actualización: 2026-10-27.
 
 ## Estado actual
-Definición del MVP **cerrada** (bloques 1 a 8). Desarrollo por etapas: ver **Progreso**.
+- Definición del MVP **cerrada** (entrevista por bloques 1 a 8, abajo).
+- Desarrollo: **Etapas 0 a 4 terminadas** y **primer APK generado** (`apk\HouseApp.apk`).
+  Todavía **no se ha probado en celulares reales**.
+- **Siguiente:** que el usuario instale el APK en los dos celulares y valide la Etapa 5
+  (tiempo real entre los dos y uso sin internet). Ver **Pendientes**.
+- Forma de trabajo con el usuario: en español, paso a paso; para definir, entrevista con pocas
+  preguntas por bloque; para diseño, se desarrolla directo y el usuario pide ajustes sobre la marcha.
 
 ## Descripción general
 App móvil para planear las comidas de la semana y generar la lista del súper.
@@ -16,213 +22,198 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
 - iOS **solo si el usuario lo pide más adelante** (puede que no). Aun así, conviene no cerrar esa puerta.
 
 ## Funcionalidad principal (idea original)
-1. **Calendario de comidas**
-   - Seleccionar un día y agregar la comida planeada (ej. "Molida con bandera").
-   - Cada comida tiene su lista de ingredientes, que se capturan uno por uno.
-   - La idea es definir las comidas de la semana antes de que empiece.
-2. **Lista de compras semanal**
-   - Se genera con todos los ingredientes de todas las comidas de la semana.
-3. **Plus: historial / recetario**
-   - Las comidas ya capturadas se guardan para reutilizarlas: se elige una comida anterior
-     y sus ingredientes se cargan solos, sin teclearlos otra vez.
+1. **Calendario de comidas**: elegir un día y agregar la comida (ej. "Molida con bandera") con sus
+   ingredientes. La idea es definir las comidas de la semana antes de que empiece.
+2. **Lista de compras**: se genera con todos los ingredientes de las comidas del periodo.
+3. **Plus: recetario**: las comidas capturadas se guardan para reutilizarlas sin volver a teclear
+   los ingredientes.
 
-## Usuarios y uso compartido (Bloque 1 — definido)
-- MVP: **un solo hogar**, solo el usuario y su pareja.
-- Los dos tienen **los mismos permisos**: planear, editar recetas, modificar la lista.
+---
+
+## Definición del MVP
+
+### Usuarios y uso compartido (Bloque 1)
+- MVP: **un solo hogar**, solo el usuario y su pareja. Los dos tienen **los mismos permisos**.
 - MVP: **no** se registra quién agregó o modificó algo (sería para la versión formal).
-- MVP: **sin pantalla de login**, se entra directo.
+- MVP: **sin pantalla de login**, se entra directo (ver "Código de hogar" en Decisiones).
 
-## Comidas y recetas (Bloque 2 — definido)
-- MVP: una receta tiene **nombre + ingredientes**; cada ingrediente tiene una **clasificación**
-  (Verduras, Carnes, etc.).
-- Las recetas se clasifican con **etiquetas libres**, varias por receta (ej. "pollo", "rápida").
-  Al escribir una etiqueta se autocompletan las existentes, para no duplicar "Pollo" y "pollo".
-- Se pueden crear de **dos formas**: desde el día del calendario (se guarda sola en el recetario)
-  o desde una sección de recetario.
-- Las recetas se pueden **editar**. El borrado es **lógico** (inactivar), nunca físico.
-- No puede haber dos recetas **activas** con el mismo nombre; si ya existe, se sugiere la existente.
+### Comidas y recetas (Bloque 2)
+- Una receta tiene **nombre + ingredientes** (artículos del catálogo) + **etiquetas libres**
+  (varias por receta, con autocompletado de las existentes).
+- Se crean desde el recetario **o** desde un día del calendario (queda guardada en el recetario).
+- Se pueden **editar**; borrado **lógico** (inactivar). No puede haber dos recetas con el mismo nombre.
+- **Receta** = plantilla única. **Comida planeada** = receta asignada a un día con **su propia copia**
+  de nombre e ingredientes.
+  - Ajustar ingredientes en un día solo afecta a ese día; al guardar se pregunta si también se
+    cambia la receta (se actualiza la misma, no se crea otra).
+  - Al editar una receta con comidas planeadas **desde hoy**, se pregunta si se actualizan también.
+  - Los días pasados nunca cambian (historial fiel).
+- La **lista del súper se genera de las comidas planeadas**, no de las recetas.
 
-### Modelo receta y comida planeada
-- **Receta** = plantilla única en el recetario.
-- **Comida planeada** = receta asignada a un día, con su **propia copia** de ingredientes.
-- Un ajuste de ingredientes en un día solo afecta a esa comida planeada. Al guardar, se pregunta
-  si el cambio también se guarda en la receta (se actualiza la misma, no se crea otra).
-- Al editar una receta que tiene días **futuros** ya planeados, se pregunta si actualizarlos también.
-- Los días pasados nunca cambian (historial fiel).
-- La **lista de compras se genera de las comidas planeadas**, no de las recetas.
-- Tablas previstas en SQL: `Receta`, `RecetaIngrediente`, `RecetaEtiqueta`, `ComidaPlaneada`,
-  `ComidaPlaneadaIngrediente`.
+### Catálogo de artículos (Bloque 3)
+- **Catálogo único** de artículos: ingredientes **y** cosas de la casa (limpieza, higiene…).
+- Cada artículo existe una sola vez y tiene una **clasificación**. Borrado lógico.
+- **Clasificaciones**: lista inicial incluida; se pueden agregar, editar, ordenar e inactivar.
+- MVP: **solo nombre**, sin cantidad ni unidad. En la lista los repetidos se juntan indicando de
+  qué comidas vienen ("Cebolla — Molida con bandera, Tinga").
+- Marca **"básico de despensa"** (sal, aceite…): en la lista sale normal pero con una marca visual.
 
-## Catálogo de artículos (Bloque 3 — definido)
-- **Catálogo único de artículos**: ingredientes de comida **y** cosas de la casa (limpieza, higiene…).
-  Así se puede agregar algo a la lista aunque no lo use ninguna receta de la semana.
-- Cada artículo existe **una sola vez** y las recetas lo referencian. Al escribir se autocompleta.
-- Borrado lógico (inactivar).
-- **Clasificaciones**: la app trae una lista inicial (Verduras, Carnes, Lácteos, Limpieza, Higiene…)
-  y los usuarios pueden agregar, editar e inactivar.
-- MVP: **solo nombre**, sin cantidad ni unidad. En la lista, los repetidos se juntan en uno
-  indicando de qué comidas vienen (ej. "Cebolla — Molida con bandera, Tinga").
-- Marca **"básico de despensa"** en el artículo (sal, aceite, azúcar…). Cómo se comporta en la
-  lista se define en el Bloque 5.
-- Tablas previstas en SQL: `Articulo`, `Clasificacion`.
+### Calendario (Bloque 4)
+- **Varias comidas por día**, sin tiempos fijos. Vista **semanal y mensual**.
+- Se planea **varias semanas hacia adelante**, en cualquier orden. La semana no tiene inicio fijo
+  (suelen comprar sábado o domingo); en pantalla la semana va de lunes a domingo.
+- **Días especiales** sin receta: opciones fijas (Comemos fuera, Sobras, Pedimos comida) **más
+  texto libre**. No generan artículos en la lista.
 
-## Calendario (Bloque 4 — definido)
-- **Varias comidas por día**, sin tiempos fijos (sin desayuno/comida/cena obligatorios).
-- Vista **semanal y mensual**, con un botón para cambiar entre ellas.
-- Se puede planear **varias semanas hacia adelante**, en cualquier día y en cualquier orden.
-- La semana no tiene un inicio fijo. Suelen comprar el sábado o el domingo, pero eso no limita
-  la planeación.
-- **Días especiales** sin receta ("comemos fuera", "sobras"…): no generan artículos en la lista.
-- **Fuera del MVP:** copiar una semana, mover o duplicar comidas entre días.
+### Lista del súper (Bloque 5)
+- "Generar lista del súper": **siempre se eligen** fecha inicio y fin (sin rango por defecto).
+- La lista **se genera y se guarda**. Si cambian las comidas del rango, la app avisa y ofrece
+  **actualizar**, conservando palomeados, artículos manuales y quitados.
+- **Artículos manuales** (del catálogo) y **quitar artículos** sin afectar recetas ni comidas.
+- MVP: **una sola lista activa**; generar otra la **reemplaza** (con confirmación), sin historial.
 
-## Lista del súper (Bloque 5 — definido)
-- Botón **"Generar lista del súper"**: los usuarios **siempre eligen** fecha inicio y fecha fin
-  (sin rango por defecto).
-- La lista **se genera y se guarda** (no se recalcula sola). Si después cambian las comidas del
-  rango, la app avisa y ofrece **actualizar la lista**. Al actualizar se conservan los palomeados,
-  los artículos manuales y los quitados.
-- Se pueden **agregar artículos manuales** del catálogo (no ligados a una comida).
-- Se pueden **quitar artículos** de la lista sin afectar la receta ni la comida planeada.
-- **Básicos de despensa**: aparecen normal pero con una **marca visual**.
-- MVP: **una sola lista activa** a la vez. Al generar una nueva, **reemplaza** a la anterior
-  (con confirmación previa). No se archivan listas anteriores.
-- Tablas previstas en SQL: `ListaCompra`, `ListaCompraArticulo`.
-
-## Modo súper (Bloque 6 — definido)
-- La lista se agrupa por **clasificación**. Los usuarios pueden **ordenar las clasificaciones**
-  según el recorrido de su súper (campo de orden en `Clasificacion`).
+### Modo súper (Bloque 6)
+- Agrupada por **clasificación** en el orden del recorrido del súper (ordenable por el usuario).
 - Al palomear, el artículo **se tacha y se va al final de su grupo**.
-- **Tiempo real** entre los dos: cada uno ve lo que el otro palomea.
-- **Funciona sin internet**: se palomea sin señal y se sincroniza al recuperarla (offline-first).
-- No hay acción de "Terminar compra" que cambie algo: lo que no se palomeó se queda tal cual
-  hasta que se genere una nueva lista.
+- **Tiempo real** entre los dos celulares y **funciona sin internet** (sincroniza al volver la señal).
+- No hay "Terminar compra": lo no palomeado se queda hasta que se genere otra lista.
 
-## Experiencia de uso (Bloque 7 — definido)
-- **Pantalla de inicio:** el calendario, en la semana actual.
-- **Sin notificaciones** en el MVP.
-- **Apariencia:** la elige Claude (ver propuesta de diseño). El usuario quiere ver el diseño
-  visualmente (Figma o algún diseñador de apps) **antes** de desarrollar.
+### Experiencia de uso (Bloque 7)
+- **Pantalla de inicio:** el calendario en la semana actual. **Sin notificaciones** en el MVP.
+- **Diseño:** lo elige Claude; no hubo prototipo (no hay Figma disponible). Material 3 (Ionic en
+  modo `md`), verde albahaca como principal, acento terracota, tema claro/oscuro según el sistema,
+  ícono (emoji) y color suave por clasificación.
 
-## Fuera del MVP (propuestas para MVP 2 o posteriores)
+### Fuera del MVP (propuestas para MVP 2 o posteriores)
 - Recetas favoritas o más usadas primero; notas o pasos; foto; link externo; porciones; precios
   y total estimado.
-- Notificaciones (sin comidas planeadas, cambios hechos por la pareja…).
-- Archivar e historial de listas pasadas.
-- Varias listas activas al mismo tiempo.
-- Pasar los pendientes de una lista a la siguiente.
+- Notificaciones (sin comidas planeadas, cambios hechos por la pareja…) → requiere registrar la app
+  Android en Firebase (`google-services.json`).
+- Archivar e historial de listas; varias listas activas; pasar pendientes a la siguiente lista.
 - Copiar una semana; mover o duplicar comidas entre días.
 - Cantidades y unidades en los artículos.
 - Registro de quién agregó o modificó algo.
-- Login (Google y cuenta propia), backend .NET 10 + BD SQL, publicación en Play Store.
+- Versión formal: login (Google y cuenta propia), backend **.NET 10** + BD **SQL**, Play Store.
 - iOS (solo si se pide).
 
-## Stack tecnológico (Bloque 8 — definido)
-- **App:** **Ionic + Angular** (el usuario ya lo conoce) + **Capacitor** para generar el APK de Android.
-- **Datos:** Firebase JS SDK — Firestore con caché persistente (modo sin internet + tiempo real)
-  y Firebase Anonymous Auth (invisible) para poder usar reglas de seguridad.
-- En Firebase la app se registra como **app Web** (el Firebase JS SDK corre dentro del WebView de
-  Capacitor). Registrar la app Android (`google-services.json`) solo hará falta si se usan
-  funciones nativas, como notificaciones push (MVP 2).
-- **Distribución del MVP:** APK instalado directo en los dos celulares, opcionalmente con
-  Firebase App Distribution. No va a Play Store.
-- **Repositorio:** GitHub **privado** en la cuenta **`learsi96`**. El git global de la máquina
-  usa la identidad de trabajo (`IsraelMovit96`), así que en este repo se configura
-  `user.name`/`user.email` **locales** de la cuenta personal. Nunca commitear con el correo de trabajo.
-- **Diseño:** sin prototipo previo (no hay Figma disponible). Se desarrolla directo y el usuario
-  pide correcciones de diseño sobre la marcha. Dirección visual: Material 3 (Ionic en modo `md`),
-  verde albahaca como principal, acento terracota, tema claro/oscuro según el sistema, ícono y
-  color suave por clasificación.
+---
 
-## Estructura del repositorio
-- `app/` → app Ionic 9 + Angular 22 (standalone) + Capacitor 8. `appId`: `com.learsi96.houseapp`.
-  Comandos desde `app/`: `ionic serve`, `npx ng build`.
-- (Futuro) `backend/` → API .NET 10, si se formaliza.
-- Remoto: `https://learsi96@github.com/learsi96/HouseApp.git` (el usuario en la URL hace que
-  Git Credential Manager use la cuenta personal). Rama `main`.
-- Identidad local del repo: `learsi96` / `92958189+learsi96@users.noreply.github.com`.
+## Stack y decisiones técnicas
+- **App:** Ionic 9 + Angular 22 (standalone, **zoneless**) + Capacitor 8. `appId` `com.learsi96.houseapp`.
+- **Datos:** Firebase JS SDK 13 — Firestore con **caché persistente** (sin internet + tiempo real)
+  y **Anonymous Auth** (invisible) para las reglas de seguridad. Proyecto Firebase `houseapp-8d4cc`.
+  En Firebase la app está registrada como **app Web** (el SDK corre dentro del WebView de Capacitor).
+- **Código de hogar:** la primera vez, un celular crea el hogar y recibe un código (ej. `K7P-42Q`);
+  el otro se une escribiéndolo (una sola vez por celular; si se reinstala, se vuelve a escribir).
+  El código se consulta en **Más → Código del hogar**.
+- **Reglas de Firestore:** `firestore.rules` en la raíz (solo los miembros del hogar leen/escriben).
+  Se publican **copiándolas en la consola de Firebase** (Firestore → Reglas). `firebase.json` y
+  `.firebaserc` quedan listos por si se usa Firebase CLI.
+- **Distribución del MVP:** APK de depuración instalado directo en los dos celulares (no Play Store).
+- **Futuro:** si se formaliza, migrar a .NET 10 + SQL. Por eso los datos están detrás de repositorios
+  y los modelos son planos. Tablas previstas: `Clasificacion`, `Articulo`, `Receta`,
+  `RecetaIngrediente`, `RecetaEtiqueta`, `ComidaPlaneada`, `ComidaPlaneadaIngrediente`,
+  `ListaCompra`, `ListaCompraArticulo`.
 
-## Entorno de desarrollo (revisado el 2026-10-27)
-- Ionic CLI 7.2.1 instalado en Node 22.23.3 (2026-10-27).
-- OK: Node 22.23.3, npm 10.9.9, Git, JDK 17 en el PATH.
-- La máquina usa **nvm-windows** (versión activa: Node 22.23.3). Cada versión de Node tiene sus
-  propios paquetes globales: Ionic CLI 7.x solo está en Node 10.16.3 y 16.20.0 (viejos);
-  Angular CLI 21.2.7 en Node 22.16.0. En la versión activa no hay ninguno de los dos.
-- Usar el Angular CLI local del proyecto (`npx ng`).
-- **Android sin Android Studio** (decisión del usuario, 2026-10-27): solo herramientas de línea de
-  comandos, todo en **E:** porque C: está casi lleno (~7 GB libres):
+### Modelo en Firestore
+- `usuarios/{uid}` → `{ hogarId }` · `codigos/{codigo}` → `{ hogarId }`
+- `hogares/{hogarId}` → `{ codigo, miembros[], creadoEn }`
+- Bajo `hogares/{hogarId}/`:
+  - `clasificaciones/{id}` → nombre, icono, color, orden, activo (ids fijos para las 12 iniciales).
+  - `articulos/{id}` → nombre, clave, clasificacionId, basico, activo (iniciales con id `ini-…`).
+  - `recetas/{id}` → nombre, clave, ingredientes[ids], etiquetas[], activo, creadaEn.
+  - `comidas/{id}` → fecha 'YYYY-MM-DD' (hora local), tipo receta|especial, recetaId, nombre,
+    icono, ingredientes[ids], orden. Quitar una comida es borrado físico (es planeación).
+  - `listas/activa` → inicio, fin, generadaEn, `articulos` como **mapa por articuloId**
+    (origenes[], manual, quitado, comprado) para que cada palomeo sea una escritura independiente.
+  - `config/semillas` → `{ articulos: true }` cuando ya se cargaron los 72 artículos iniciales.
+
+---
+
+## Estructura del código (`app/src/app/`)
+- `core/` → `firebase.service` (inicio, auth anónima, caché), `hogar.service` (crear/unirse con
+  código), `hogar.guard`, `modal.ts` (`cerrarEsteModal()`).
+- `data/` → **única capa que toca Firestore**: `modelos.ts`, `hogar-db.ts` (`escuchar`,
+  `escucharDoc`, `enviar`), repositorios (`clasificaciones`, `articulos`, `recetas`, `comidas`,
+  `lista`), `lista.ts` (reglas puras de armado/actualización de la lista), `fechas.ts`, `texto.ts`
+  (`claveTexto`, `limpiarNombre`), `articulos-iniciales.ts`.
+- `bienvenida/` (crear hogar o unirse) · `tabs/` (Calendario, Recetas, Lista, Más)
+- `calendario/` → página, `agregar-comida`, `comida-detalle`.
+- `recetas/` → página, `receta-form`, `receta-editor.service` (abre el formulario, guarda y hace las
+  preguntas de días futuros; lo usan recetario y calendario).
+- `lista/` → página, `generar-lista`.
+- `catalogo/` → artículos y clasificaciones (páginas y formularios), `articulo-selector`
+  (selector múltiple con "Crear…", reutilizado en recetas, comidas y lista), `ingredientes`
+  (lista editable de ingredientes).
+- `mas/` → menú de catálogos y código del hogar.
+- Tema: `theme/variables.scss` (colores) y `global.scss` (clases `cl-<color>` de clasificaciones).
+
+## Repositorio
+- GitHub **privado**: `https://learsi96@github.com/learsi96/HouseApp.git`, rama `main`
+  (el usuario en la URL hace que Git Credential Manager use la cuenta personal).
+- Identidad **local** del repo: `learsi96` / `92958189+learsi96@users.noreply.github.com`.
+  El git global de la máquina es de trabajo (`IsraelMovit96`): **nunca commitear con el correo de trabajo**.
+- `app/` (Ionic) · `app/android/` (proyecto Capacitor) · `app/scripts/apk.ps1` · `apk/` (salida,
+  ignorada) · `firestore.rules` · (futuro) `backend/`.
+- No está instalado GitHub CLI (`gh`).
+
+## Entorno de desarrollo
+- Windows; **nvm-windows** con Node **22.23.3** activo (cada versión de Node tiene sus propios
+  globales). En esa versión está **Ionic CLI 7.2.1**. Angular CLI: usar el local (`npx ng`).
+- Correr la app en el navegador: desde `app/`, `ionic serve` → http://localhost:8100.
+- **Android sin Android Studio** (decisión del usuario), todo en **E:** porque **C: está casi lleno**
+  (~7 GB libres):
   - JDK 21 (Temurin 21.0.12) en `E:\Android\jdk-21`.
   - SDK en `E:\Android\Sdk`: cmdline-tools, platform-tools, `platforms;android-36`, `build-tools;36.0.0`.
-    `sdkmanager` ya es obsoleto: usar `E:\Android\Sdk\cmdline-tools\latest\bin\android.exe
-    --no-metrics --sdk=E:\Android\Sdk sdk install|list ...`. Licencia del SDK aceptada por el usuario.
+    `sdkmanager` es obsoleto: usar `E:\Android\Sdk\cmdline-tools\latest\bin\android.exe --no-metrics
+    --sdk=E:\Android\Sdk sdk install|list ...`. Licencia del SDK aceptada por el usuario.
   - Caché de Gradle en `E:\Android\gradle`.
-  - Las variables globales **no se tocaron** (el `JAVA_HOME` global sigue en JDK 8, lo usa el trabajo).
+  - Las variables de entorno globales **no se tocaron** (el `JAVA_HOME` global sigue en JDK 8 para
+    el trabajo del usuario).
   - **Generar el APK:** desde `app/`: `powershell -ExecutionPolicy Bypass -File scripts\apk.ps1`
-    (fija las rutas solo para ese proceso, compila, `cap sync` y `gradlew assembleDebug`).
-    Resultado en `apk\HouseApp.apk` (raíz del repo, ignorado por git).
-- No está instalado GitHub CLI (`gh`).
-- **Futuro (si se formaliza y se publica en Play Store):** migrar a BD SQL + backend **.NET 10**,
-  con login por Google y por cuenta propia en la BD, y registro de quién hace cada cambio.
+    (fija las rutas solo para ese proceso; compila producción, `cap sync`, `gradlew assembleDebug
+    --no-daemon`). Resultado: `apk\HouseApp.apk` en la raíz del repo.
+  - El APK se firma con `C:\Users\jicm_\.android\debug.keystore`: **no borrarla**, o para actualizar
+    habría que desinstalar la app (los datos siguen en Firebase, pero hay que reescribir el código).
 
 ## Reglas y convenciones
-- Borrado lógico (campo activo/inactivo) en los catálogos, como las recetas.
-- Separar el acceso a datos detrás de una capa de repositorios/servicios, para que migrar
-  de Firebase a .NET + SQL no obligue a reescribir la UI.
-  - `src/app/data/`: modelos planos (`modelos.ts`) y un repositorio por colección, que expone
-    observables en tiempo real (`todos$`) y métodos async. Solo `HogarDb` toca Firestore.
-  - Las pantallas usan `toSignal(repo.todos$)`; la app es **zoneless** (sin zone.js).
-  - **Nunca esperar (`await`) una escritura de Firestore**: sin internet no resuelve hasta
-    reconectar. Usar `hogarDb.enviar(setDoc(...))`; para crear, generar el id con `doc(coleccion)`.
-    Excepción: operaciones que requieren servidor (crear/unirse a hogar, carga inicial).
-- Nombres en español en el dominio y la UI (`Articulo`, `Clasificacion`, `crear`, `cambiarActivo`…).
-- Comparar nombres con `claveTexto()` (sin acentos ni mayúsculas) para evitar duplicados.
-- Componentes abiertos como modal: sufijo `Component` (regla de lint) y **nunca** una propiedad
-  llamada `modal` (Ionic la reserva); usar `modalCtrl`.
-- Para cerrar un modal desde su componente usar `cerrarEsteModal()` (`core/modal.ts`), no
-  `modalCtrl.dismiss()`: con modales anidados este último puede cerrar el equivocado.
-- Antes de commitear: `npx ng lint` y `npx ng build` desde `app/`.
-- No editar archivos con `Get-Content`/`Set-Content` de PowerShell 5.1: rompe los acentos y agrega BOM.
+- Acceso a datos solo por `src/app/data/` (repositorios con observables en tiempo real y métodos
+  async). Las pantallas usan `toSignal(repo.todos$)`.
+- **Nunca esperar (`await`) una escritura de Firestore**: sin internet no resuelve hasta reconectar.
+  Usar `hogarDb.enviar(setDoc(...))`; para crear, generar el id con `doc(coleccion)`.
+  Excepción: lo que necesita servidor (crear/unirse a hogar, cargas iniciales).
+- Borrado lógico (`activo`) en catálogos (clasificaciones, artículos, recetas).
+- Nombres en español en dominio y UI. Comparar nombres con `claveTexto()` para evitar duplicados.
+- Componentes abiertos como modal: sufijo `Component` (lint), nunca una propiedad llamada `modal`
+  (Ionic la reserva) y cerrarlos con `cerrarEsteModal()`, no con `modalCtrl.dismiss()` (con modales
+  anidados puede cerrar el equivocado).
+- Antes de commitear: `npx ng lint` y `npx ng build` desde `app/` (y `npx prettier --write`).
+- No editar archivos con `Get-Content`/`Set-Content` de PowerShell 5.1: rompe acentos y agrega BOM.
+- Al probar en el navegador con los datos reales del usuario: no tocar lo que él capturó y
+  limpiar lo que se agregue de prueba.
 
 ## Progreso
-- **Etapa 0 (preparación):** terminada. Proyecto, Firebase, hogar con código, reglas.
-- **Etapa 1 (catálogos):** terminada. Pestañas (Calendario, Recetas, Lista y Más; las tres
-  primeras todavía son pantallas temporales), clasificaciones (12 iniciales que se crean solas;
-  crear, editar, ícono y color, ordenar, inactivar) y artículos (búsqueda, "Crear…" desde el
-  buscador, agrupados por clasificación, básico de despensa, inactivar y ver inactivos).
-  Catálogo inicial de 72 artículos comunes (`data/articulos-iniciales.ts`), que se cargan **una
-  sola vez por hogar** (marca en `hogares/{id}/config/semillas`) y se saltan los que ya existan.
-- **Etapa 2 (recetario):** terminada. Pestaña Recetas (búsqueda, "Crear receta…", filtro por
-  etiqueta, ver inactivas), formulario con ingredientes del catálogo (selector reutilizable
-  `ArticuloSelectorComponent` con búsqueda y "Crear…") y etiquetas libres con autocompletado.
-  `RecetaEditorService` abre el formulario y guarda; lo reutilizará el calendario.
-- **Etapa 3 (calendario):** terminada. Pestaña Calendario (pantalla de inicio) con vista Semana
-  (lunes a domingo) y Mes (cuadrícula con puntos y las comidas del día elegido), navegación y "Hoy".
-  Agregar comida a un día: receta del recetario, "Crear receta…" o día especial (Comemos fuera,
-  Sobras, Pedimos comida, u "Otro…" con texto libre). Detalle de la comida: ajustar ingredientes
-  solo de ese día (pregunta si también se cambia la receta) y "Quitar de este día".
-  Al editar una receta (desde el recetario o desde un día) se pregunta si se actualizan las comidas
-  planeadas **desde hoy**; los días pasados nunca cambian.
-  - Firestore: `hogares/{id}/comidas` con `fecha` 'YYYY-MM-DD' (hora local, `data/fechas.ts`).
-    Quitar una comida es borrado físico (es planeación, no catálogo).
-  - `IngredientesComponent` (lista editable de ingredientes) lo usan la receta y la comida del día.
-- **Etapa 4 (lista del súper):** terminada. Pestaña Lista: generar por rango (fechas obligatorias,
-  vista previa de comidas y artículos), agrupada por clasificación en el orden del recorrido, con
-  origen de cada artículo ("Molida con bandera, Tinga" o "Agregado a mano"), marca de básicos,
-  quitar y "Quitados (n)" con "Regresar", agregar a mano con el selector, aviso "Cambiaron las
-  comidas" + "Actualizar lista", y "Generar nueva" con confirmación (reemplaza la activa).
-  Se adelantó de la Etapa 5: palomear (tachado y al final de su grupo) y barra de progreso.
-  - Firestore: un solo documento `hogares/{id}/listas/activa` con `articulos` como **mapa por
-    articuloId**, para que cada palomeo sea una escritura independiente (`FieldPath`).
-  - Reglas de armado/actualización en `data/lista.ts` (funciones puras, probadas con node).
-- **Siguiente:** Etapa 5 (modo súper: probar tiempo real entre dos celulares y sin internet).
+- **Etapa 0 — Preparación:** proyecto, Firebase, hogar con código, reglas de seguridad.
+- **Etapa 1 — Catálogos:** pestañas; clasificaciones (12 iniciales automáticas; crear, editar,
+  ícono y color, ordenar, inactivar con validación de artículos activos); artículos (buscador con
+  "Crear…", agrupados por clasificación, básico, inactivar/ver inactivos) y 72 artículos iniciales.
+- **Etapa 2 — Recetario:** búsqueda, "Crear receta…", filtro por etiqueta, inactivas; formulario con
+  ingredientes (selector) y etiquetas con autocompletado.
+- **Etapa 3 — Calendario:** semana y mes, agregar receta/nueva receta/día especial, detalle con
+  ajuste solo del día y pregunta de cambiar la receta, quitar del día, pregunta de días futuros.
+- **Etapa 4 — Lista del súper:** generar por rango con vista previa, agrupada y ordenada, orígenes,
+  básicos, quitar/regresar, agregar a mano, aviso de cambios + actualizar, generar nueva con
+  confirmación. Adelantado de la Etapa 5: palomear y barra de progreso.
+- **Etapa 6 — APK:** plataforma Android agregada, script de compilación y primer APK (válido,
+  revisado con `aapt2`/`apksigner`). Ícono y pantalla de carga: los genéricos de Capacitor.
 
-## Decisiones tomadas
-- Firebase para el MVP; .NET 10 + SQL solo si se formaliza (ver Stack).
-- Sin login visible en el MVP: se usa Firebase Anonymous Auth (un usuario por celular).
-- **Código de hogar:** la primera vez, un celular crea el hogar y recibe un código (ej. `K7P-42Q`);
-  el otro celular se une escribiéndolo. Se hace una sola vez por celular (si se reinstala la app,
-  se vuelve a capturar el código). Modelo en Firestore: `usuarios/{uid}`, `codigos/{codigo}`,
-  `hogares/{hogarId}` con `miembros[]`, y todos los datos bajo `hogares/{hogarId}/...`.
-  Las reglas están en `firestore.rules` (raíz del repo) y solo dejan entrar a los miembros del hogar.
-
-## Preguntas abiertas
-_Ver la retroalimentación del análisis inicial; se irán anotando aquí las respuestas._
+## Pendientes
+- [ ] **Etapa 5:** instalar el APK en los dos celulares y probar tiempo real y modo sin internet.
+- [ ] Probar en un celular la pregunta de "actualizar las comidas planeadas desde hoy" al editar una
+      receta (el código está, pero no se probó en el navegador para no modificar la receta real).
+- [ ] Ícono y pantalla de carga propios de HouseApp (opcional, ofrecido al usuario).
+- [ ] Ajustes de diseño que pida el usuario al usar la app.
+- Datos actuales del hogar del navegador: receta "Molida con bandera" (creada en pruebas, real),
+  una Molida planeada el 27 oct (la puso el usuario) y una **lista activa de prueba** (27 oct–1 nov,
+  ajo quitado, cebolla palomeada, papel de baño manual): se reemplaza al generar una nueva.
+  En los celulares se puede crear un hogar nuevo o unirse al del navegador con su código.
