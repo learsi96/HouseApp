@@ -29,7 +29,7 @@ import { ArticulosRepository } from '../data/articulos.repository';
 import { ClasificacionesRepository } from '../data/clasificaciones.repository';
 import { ComidasRepository } from '../data/comidas.repository';
 import { deIso, fechaCorta, nombreDia } from '../data/fechas';
-import { derivarArticulos, hayCambios } from '../data/lista';
+import { derivarArticulos, hayCambios, manualesPendientes } from '../data/lista';
 import { ListaRepository } from '../data/lista.repository';
 import type { Articulo, ArticuloLista, Clasificacion, ComidaPlaneada } from '../data/modelos';
 
@@ -335,9 +335,16 @@ export class ListaPage {
   async generar(): Promise<void> {
     const actual = this.lista();
     if (actual) {
+      const pendientes = manualesPendientes(actual.articulos).length;
+      const manuales =
+        pendientes === 1
+          ? ' El artículo agregado a mano que no han comprado pasa a la nueva lista.'
+          : pendientes > 1
+            ? ` Los ${pendientes} artículos agregados a mano que no han comprado pasan a la nueva lista.`
+            : '';
       const confirmacion = await this.alerta.create({
         header: 'Generar nueva lista',
-        message: `La lista actual (${this.rangoTexto()}) se reemplaza, incluyendo lo que ya palomearon.`,
+        message: `La lista actual (${this.rangoTexto()}) se reemplaza.${manuales}`,
         buttons: [
           { text: 'Cancelar', role: 'cancel' },
           { text: 'Continuar', role: 'confirm' },
@@ -356,7 +363,8 @@ export class ListaPage {
     }
     // Se leen las comidas del rango justo al generar (la vista previa del modal es solo informativa).
     const comidas = await this.comidasRepo.enRango(data.inicio, data.fin);
-    await this.repo.generar(data.inicio, data.fin, derivarArticulos(comidas));
+    // La lista anterior se toma ya al final por si la pareja agregó algo mientras se elegían las fechas.
+    await this.repo.generar(data.inicio, data.fin, derivarArticulos(comidas), this.lista());
   }
 
   async actualizar(): Promise<void> {

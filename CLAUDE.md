@@ -71,6 +71,7 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
   **actualizar**, conservando palomeados, artículos manuales y quitados.
 - **Artículos manuales** (del catálogo) y **quitar artículos** sin afectar recetas ni comidas.
 - MVP: **una sola lista activa**; generar otra la **reemplaza** (con confirmación), sin historial.
+  Los **agregados a mano pendientes** (ni palomeados ni quitados) **pasan a la lista nueva**.
 
 ### Modo súper (Bloque 6)
 - Agrupada por **clasificación** en el orden del recorrido del súper (ordenable por el usuario).
@@ -110,6 +111,9 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
   Se publican **copiándolas en la consola de Firebase** (Firestore → Reglas). `firebase.json` y
   `.firebaserc` quedan listos por si se usa Firebase CLI.
 - **Distribución del MVP:** APK de depuración instalado directo en los dos celulares (no Play Store).
+  Versión actual **1.1** (`versionCode 2`, en `app/android/app/build.gradle`): subirla en cada APK
+  que se distribuya. Propuesta para repartirlo: **Firebase App Distribution** (requiere registrar la
+  app Android `com.learsi96.houseapp` en Firebase; opcional Firebase CLI para subirlo desde el script).
 - **Futuro:** si se formaliza, migrar a .NET 10 + SQL. Por eso los datos están detrás de repositorios
   y los modelos son planos. Tablas previstas: `Clasificacion`, `Articulo`, `Receta`,
   `RecetaIngrediente`, `RecetaEtiqueta`, `ComidaPlaneada`, `ComidaPlaneadaIngrediente`,
@@ -211,6 +215,8 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
 - [ ] **Etapa 5:** instalar el APK en los dos celulares y probar tiempo real y modo sin internet.
 - [ ] Probar en un celular la pregunta de "actualizar las comidas planeadas desde hoy" al editar una
       receta (el código está, pero no se probó en el navegador para no modificar la receta real).
+- [ ] Distribuir con Firebase App Distribution (el usuario registra la app Android y crea el grupo
+      de testers; pendiente pasar el ID de la app para automatizar la subida).
 - [ ] Ícono y pantalla de carga propios de HouseApp (opcional, ofrecido al usuario).
 - [ ] Ajustes de diseño que pida el usuario al usar la app.
 - Datos actuales del hogar del navegador: receta "Molida con bandera" (creada en pruebas, real),

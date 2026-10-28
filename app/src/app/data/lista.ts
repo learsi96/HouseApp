@@ -33,6 +33,29 @@ export function nuevaLista(derivados: Derivados): ArticuloLista[] {
   }));
 }
 
+/** Agregados a mano que siguen pendientes: ni comprados ni quitados. Pasan a la siguiente lista. */
+export function manualesPendientes(articulos: ArticuloLista[]): ArticuloLista[] {
+  return articulos.filter((a) => a.manual && !a.comprado && !a.quitado);
+}
+
+/**
+ * Arma la lista de un rango nuevo. Los agregados a mano pendientes de la lista anterior se conservan;
+ * si además son ingrediente del rango, salen una sola vez con sus comidas y siguen marcados como manuales.
+ */
+export function nuevaListaConManuales(anterior: ArticuloLista[], derivados: Derivados): ArticuloLista[] {
+  const resultado = nuevaLista(derivados);
+  const presentes = new Map(resultado.map((a) => [a.articuloId, a]));
+  for (const manual of manualesPendientes(anterior)) {
+    const existente = presentes.get(manual.articuloId);
+    if (existente) {
+      existente.manual = true;
+    } else {
+      resultado.push({ articuloId: manual.articuloId, origenes: [], manual: true, quitado: false, comprado: false });
+    }
+  }
+  return resultado;
+}
+
 /**
  * Aplica los cambios de las comidas a una lista existente. Se conservan los palomeados,
  * los agregados a mano y los quitados. Un artículo que ya no usa ninguna comida sale de la lista,

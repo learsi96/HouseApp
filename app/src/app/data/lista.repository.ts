@@ -5,7 +5,7 @@ import { shareReplay } from 'rxjs';
 
 import { HogarDb } from './hogar-db';
 import type { Derivados } from './lista';
-import { actualizarLista, nuevaLista } from './lista';
+import { actualizarLista, nuevaListaConManuales } from './lista';
 import type { ArticuloLista, ListaCompra } from './modelos';
 
 const COLECCION = 'listas';
@@ -40,10 +40,11 @@ export class ListaRepository {
     .escucharDoc(COLECCION, ACTIVA, mapear)
     .pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
-  /** Crea la lista del rango; si ya había una, la reemplaza. */
-  async generar(inicio: string, fin: string, derivados: Derivados): Promise<void> {
+  /** Crea la lista del rango; si ya había una, la reemplaza pasando sus agregados a mano pendientes. */
+  async generar(inicio: string, fin: string, derivados: Derivados, anterior: ListaCompra | null): Promise<void> {
+    const articulos = nuevaListaConManuales(anterior?.articulos ?? [], derivados);
     this.hogarDb.enviar(
-      setDoc(await this.ref(), { inicio, fin, generadaEn: serverTimestamp(), articulos: aMapa(nuevaLista(derivados)) }),
+      setDoc(await this.ref(), { inicio, fin, generadaEn: serverTimestamp(), articulos: aMapa(articulos) }),
     );
   }
 
