@@ -1,14 +1,18 @@
 # HouseApp — Contexto del proyecto
 
 > Este archivo se carga automáticamente en cada sesión de Claude Code.
-> Contiene el contexto principal del proyecto. Última actualización: 2026-10-27.
+> Contiene el contexto principal del proyecto. Última actualización: 2026-10-28.
 
 ## Estado actual
 - Definición del MVP **cerrada** (entrevista por bloques 1 a 8, abajo).
-- Desarrollo: **Etapas 0 a 4 terminadas** y **primer APK generado** (`apk\HouseApp.apk`).
-  Todavía **no se ha probado en celulares reales**.
-- **Siguiente:** que el usuario instale el APK en los dos celulares y valide la Etapa 5
-  (tiempo real entre los dos y uso sin internet). Ver **Pendientes**.
+- Desarrollo: **Etapas 0 a 4 y 6 terminadas**. Versión **1.1** distribuida por **Firebase App
+  Distribution** al grupo `casa` (los dos reciben el aviso e instalan con Firebase App Tester).
+  El usuario ya empezó a probar la app; de ahí salió el ajuste de la 1.1 (manuales a la lista nueva).
+- **Siguiente:** que los dos instalen la 1.1 desde App Tester y validen la Etapa 5 (tiempo real
+  entre los dos y uso sin internet). Ver **Pendientes**.
+- **Para publicar una versión nueva** (cuando el usuario diga "genera y distribuye"): subir
+  `versionCode`/`versionName` en `app/android/app/build.gradle`, lint + build, y desde `app/`:
+  `powershell -ExecutionPolicy Bypass -File scriptspk.ps1 -Distribuir -Notas "Qué cambió"`.
 - Forma de trabajo con el usuario: en español, paso a paso; para definir, entrevista con pocas
   preguntas por bloque; para diseño, se desarrolla directo y el usuario pide ajustes sobre la marcha.
 
@@ -179,7 +183,8 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
     el trabajo del usuario).
   - **Generar el APK:** desde `app/`: `powershell -ExecutionPolicy Bypass -File scripts\apk.ps1`
     (fija las rutas solo para ese proceso; compila producción, `cap sync`, `gradlew assembleDebug
-    --no-daemon`). Resultado: `apk\HouseApp.apk` en la raíz del repo.
+    --no-daemon`). Resultado: `apk\HouseApp.apk` en la raíz del repo. Con `-Distribuir -Notas "..."`
+    además lo sube a App Distribution (ver Distribución del MVP).
   - El APK se firma con `C:\Users\jicm_\.android\debug.keystore`: **no borrarla**, o para actualizar
     habría que desinstalar la app (los datos siguen en Firebase, pero hay que reescribir el código).
 
@@ -213,9 +218,15 @@ Nace de una necesidad real en casa: el usuario y su pareja hacen la lista de com
   confirmación. Adelantado de la Etapa 5: palomear y barra de progreso.
 - **Etapa 6 — APK:** plataforma Android agregada, script de compilación y primer APK (válido,
   revisado con `aapt2`/`apksigner`). Ícono y pantalla de carga: los genéricos de Capacitor.
+- **Versión 1.1:** al generar una lista nueva, los agregados a mano pendientes (ni comprados ni
+  quitados) pasan a la nueva (`nuevaListaConManuales` en `data/lista.ts`); la confirmación dice
+  cuántos. Distribución por Firebase App Distribution integrada en `apk.ps1`.
 
 ## Pendientes
-- [ ] **Etapa 5:** instalar el APK en los dos celulares y probar tiempo real y modo sin internet.
+- [ ] **Etapa 5:** instalar la 1.1 desde Firebase App Tester en los dos celulares (aceptar la
+      invitación por correo la primera vez) y probar tiempo real y modo sin internet.
+- [ ] Probar en la app que los manuales pendientes pasan a la lista nueva y los palomeados/quitados no
+      (solo se verificó con lint y build).
 - [ ] Probar en un celular la pregunta de "actualizar las comidas planeadas desde hoy" al editar una
       receta (el código está, pero no se probó en el navegador para no modificar la receta real).
 - [ ] Ícono y pantalla de carga propios de HouseApp (opcional, ofrecido al usuario).
